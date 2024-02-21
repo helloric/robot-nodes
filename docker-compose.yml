@@ -8,6 +8,6 @@ services:
       args:
         ROS_DISTRO: humble
     image: brean/ricbot:humble
-    environment: 
+    environment:
       - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
-    command: [ros2, launch, ricbot_bringup, ricbot_sim.launch.py]
+    command: [ros2, launch, ricbot_bringup, ricbot.launch.py]

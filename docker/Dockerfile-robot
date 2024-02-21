@@ -1,0 +1,37 @@
+RG ROS_DISTRO
+FROM ros:${ROS_DISTRO}
+
+ENV COLCON_WS=/root/colcon_ws
+ENV COLCON_WS_SRC=/root/colcon_ws/src
+ENV PYTHONWARNINGS="ignore:setup.py install is deprecated::setuptools.command.install"
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update -qq \
+    && apt-get install -y \
+        ros-${ROS_DISTRO}-xacro \
+        ros-${ROS_DISTRO}-rplidar-ros \
+        ros-${ROS_DISTRO}-realsense2-camera \
+        ros-${ROS_DISTRO}-kobuki-ros-interfaces \
+        ros-${ROS_DISTRO}-kobuki-velocity-smoother \
+        ros-${ROS_DISTRO}-nav2-amcl \
+        ros-${ROS_DISTRO}-nav2-dwb-controller \
+        ros-${ROS_DISTRO}-perception \
+        ros-${ROS_DISTRO}-vision-opencv \
+        python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR ${COLCON_WS}
+
+COPY ./docker/entrypoint.bash /ros_entrypoint.bash
+RUN chmod +x /ros_entrypoint.bash
+ENTRYPOINT ["/ros_entrypoint.bash"]
+
+COPY ./ricbot_description ${COLCON_WS_SRC}/ricbot_description
+COPY ./ricbot_bringup ${COLCON_WS_SRC}/ricbot_bringup
+COPY ./ricbot_description ${COLCON_WS_SRC}/ricbot_navigation
+
+RUN cd ${COLCON_WS}\
+    && . /opt/ros/${ROS_DISTRO}/setup.sh\
+    && colcon build
+

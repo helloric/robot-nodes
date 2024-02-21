@@ -1,0 +1,9 @@
+[submodule "ricbot_navigation"]
+	path = ricbot_navigation
+	url = ../ricbot_navigation
+[submodule "ricbot_description"]
+	path = ricbot_description
+	url = ../ricbot_description
+[submodule "ricbot_bringup"]
+	path = ricbot_bringup
+	url = ../ricbot_bringup
