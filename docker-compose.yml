@@ -10,4 +10,13 @@ services:
     image: brean/ricbot:humble
     environment:
       - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
-    command: [ros2, launch, ricbot_bringup, ricbot.launch.py]
+    command: [ros2, launch, ricbot_bringup, ricbot_robot.launch.py]
+    privileged: True
+    volumes:
+      - ./roslog:/root/.ros/
+      - /dev:/dev
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    devices:
+      - /dev/bus/usb/
+    network_mode: host
+

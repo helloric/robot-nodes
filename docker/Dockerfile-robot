@@ -1,4 +1,4 @@
-RG ROS_DISTRO
+ARG ROS_DISTRO
 FROM ros:${ROS_DISTRO}
 
 ENV COLCON_WS=/root/colcon_ws
@@ -7,18 +7,26 @@ ENV PYTHONWARNINGS="ignore:setup.py install is deprecated::setuptools.command.in
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# ROS 2 basic navigation and driver
 RUN apt-get update -qq \
     && apt-get install -y \
+        git \
         ros-${ROS_DISTRO}-xacro \
+        ros-${ROS_DISTRO}-ecl-build \
+        ros-${ROS_DISTRO}-kobuki-velocity-smoother \
+        ros-${ROS_DISTRO}-joint-state-publisher \
         ros-${ROS_DISTRO}-rplidar-ros \
         ros-${ROS_DISTRO}-realsense2-camera \
-        ros-${ROS_DISTRO}-kobuki-ros-interfaces \
-        ros-${ROS_DISTRO}-kobuki-velocity-smoother \
         ros-${ROS_DISTRO}-nav2-amcl \
         ros-${ROS_DISTRO}-nav2-dwb-controller \
+        python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+# perception and vision
+RUN apt-get update -qq \
+    && apt-get install -y \
         ros-${ROS_DISTRO}-perception \
         ros-${ROS_DISTRO}-vision-opencv \
-        python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${COLCON_WS}
@@ -29,9 +37,16 @@ ENTRYPOINT ["/ros_entrypoint.bash"]
 
 COPY ./ricbot_description ${COLCON_WS_SRC}/ricbot_description
 COPY ./ricbot_bringup ${COLCON_WS_SRC}/ricbot_bringup
-COPY ./ricbot_description ${COLCON_WS_SRC}/ricbot_navigation
+COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation
+
+RUN cd ${COLCON_WS_SRC}\
+    && git clone https://github.com/kobuki-base/kobuki_ros.git\
+    && git clone https://github.com/kobuki-base/kobuki_ros_interfaces.git
 
 RUN cd ${COLCON_WS}\
     && . /opt/ros/${ROS_DISTRO}/setup.sh\
+    && apt-get update -qq \
+    && rosdep install --from-paths src --ignore-src -r -y\
+    && rm -rf /var/lib/apt/lists/*\
     && colcon build
 
