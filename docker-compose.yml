@@ -1,0 +1,13 @@
+version: '3'
+services:
+  ricbot:
+    # just the basic robot (headless, installs drivers, publishes description)
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile-robot
+      args:
+        ROS_DISTRO: humble
+    image: brean/ricbot:humble
+    environment: 
+      - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
+    command: [ros2, launch, ricbot_bringup, ricbot_sim.launch.py]
