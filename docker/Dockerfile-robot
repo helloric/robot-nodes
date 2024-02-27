@@ -40,8 +40,12 @@ COPY ./ricbot_bringup ${COLCON_WS_SRC}/ricbot_bringup
 COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation
 
 RUN cd ${COLCON_WS_SRC}\
+    && git clone https://github.com/clalancette/sophus.git -b clalancette/fix-compiler-error\
     && git clone https://github.com/kobuki-base/kobuki_ros.git\
-    && git clone https://github.com/kobuki-base/kobuki_ros_interfaces.git
+    && git clone https://github.com/kobuki-base/kobuki_core.git\
+    && git clone https://github.com/kobuki-base/kobuki_ros_interfaces.git\
+    && git clone https://github.com/stonier/ecl_lite.git\
+    && git clone https://github.com/stonier/ecl_core.git
 
 RUN cd ${COLCON_WS}\
     && . /opt/ros/${ROS_DISTRO}/setup.sh\
