@@ -35,22 +35,26 @@ COPY ./docker/entrypoint.bash /ros_entrypoint.bash
 RUN chmod +x /ros_entrypoint.bash
 ENTRYPOINT ["/ros_entrypoint.bash"]
 
-COPY ./ricbot_description ${COLCON_WS_SRC}/ricbot_description
-COPY ./ricbot_bringup ${COLCON_WS_SRC}/ricbot_bringup
-COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation
-
 RUN cd ${COLCON_WS_SRC}\
     && git clone https://github.com/clalancette/sophus.git -b clalancette/fix-compiler-error\
     && git clone https://github.com/kobuki-base/kobuki_ros.git\
     && git clone https://github.com/kobuki-base/kobuki_core.git\
     && git clone https://github.com/kobuki-base/kobuki_ros_interfaces.git\
+    && git clone https://github.com/kobuki-base/cmd_vel_mux.git \
     && git clone https://github.com/stonier/ecl_lite.git\
     && git clone https://github.com/stonier/ecl_core.git
 
 RUN cd ${COLCON_WS}\
     && . /opt/ros/${ROS_DISTRO}/setup.sh\
     && apt-get update -qq \
-    && rosdep install --from-paths src --ignore-src -r -y\
+    && rosdep install -i --from-path src --rosdistro humble -y \
     && rm -rf /var/lib/apt/lists/*\
     && colcon build
 
+COPY ./ricbot_description ${COLCON_WS_SRC}/ricbot_description
+COPY ./ricbot_bringup ${COLCON_WS_SRC}/ricbot_bringup
+COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation
+
+RUN cd ${COLCON_WS}\
+    && . /opt/ros/${ROS_DISTRO}/setup.sh\
+    && colcon build
