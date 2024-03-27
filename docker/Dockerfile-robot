@@ -57,4 +57,4 @@ COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation
 
 RUN cd ${COLCON_WS}\
     && . /opt/ros/${ROS_DISTRO}/setup.sh\
-    && colcon build
+    && colcon build --packages-select ricbot_description ricbot_bringup
