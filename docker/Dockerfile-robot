@@ -7,26 +7,28 @@ ENV PYTHONWARNINGS="ignore:setup.py install is deprecated::setuptools.command.in
 
 ENV DEBIAN_FRONTEND noninteractive
 
+WORKDIR ${COLCON_WS_SRC}
+
 # ROS 2 basic navigation and driver
 RUN apt-get update -qq \
     && apt-get install -y \
-        git \
-        ros-${ROS_DISTRO}-xacro \
-        ros-${ROS_DISTRO}-ecl-build \
-        ros-${ROS_DISTRO}-kobuki-velocity-smoother \
-        ros-${ROS_DISTRO}-joint-state-publisher \
-        ros-${ROS_DISTRO}-rplidar-ros \
-        ros-${ROS_DISTRO}-realsense2-camera \
-        ros-${ROS_DISTRO}-nav2-amcl \
-        ros-${ROS_DISTRO}-nav2-dwb-controller \
-        python3-colcon-common-extensions \
+    git \
+    ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-ecl-build \
+    ros-${ROS_DISTRO}-kobuki-velocity-smoother \
+    ros-${ROS_DISTRO}-joint-state-publisher \
+    ros-${ROS_DISTRO}-rplidar-ros \
+    ros-${ROS_DISTRO}-realsense2-camera \
+    ros-${ROS_DISTRO}-nav2-amcl \
+    ros-${ROS_DISTRO}-nav2-dwb-controller \
+    python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
 
 # perception and vision
 RUN apt-get update -qq \
     && apt-get install -y \
-        ros-${ROS_DISTRO}-perception \
-        ros-${ROS_DISTRO}-vision-opencv \
+    ros-${ROS_DISTRO}-perception \
+    ros-${ROS_DISTRO}-vision-opencv \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${COLCON_WS}
