@@ -41,4 +41,4 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh\
 COPY ./docker/entrypoint_kobuki_driver.bash /ros_entrypoint.bash
 RUN chmod +x /ros_entrypoint.bash
 ENTRYPOINT ["/ros_entrypoint.bash"]
-CMD [ "ros2",  "launch kobuki_node",  "kobuki_node-launch.py" ]
+CMD [ "ros2",  "launch", "kobuki_node",  "kobuki_node-launch.py" ]
