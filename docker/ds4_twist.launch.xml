@@ -5,7 +5,8 @@
 
   <arg name="dof" default="2" />
   <arg name="stamped" default="false" />
-  <arg name="scales" default="{'linear':{'x':0.3, 'y':0.3}}"/>
+  <!-- scales seems to have no effect. Maybe it is used wrong -->
+  <arg name="scales" default="{'linear':{'x':0.3, 'y':0.3}}"/> 
 
   <include file="$(find-pkg-share ds4_driver)/launch/ds4_driver.launch.xml" >
     <arg name="addr" value="$(var addr)" />
