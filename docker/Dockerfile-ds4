@@ -1,0 +1,6 @@
+ARG ROS_DISTRO
+FROM naomiz/ds4_driver:${ROS_DISTRO}
+
+COPY docker/ds4_twist.launch.xml /opt/underlay_ws/install/ds4_driver/share/ds4_driver/launch/ds4_twist.launch.xml
+
+CMD [ "ros2", "launch", "ds4_driver", "ds4_twist.launch.xml"]
