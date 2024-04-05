@@ -3,9 +3,18 @@ FROM ros:${ROS_DISTRO}
 
 ENV COLCON_WS=/root/colcon_ws
 ENV COLCON_WS_SRC=/root/colcon_ws/src
+ENV EIGEN_DIR=/root/eigen
 ENV PYTHONWARNINGS="ignore:setup.py install is deprecated::setuptools.command.install"
 
 ENV DEBIAN_FRONTEND noninteractive
+
+### build eigen from source  ## worked with https://gitlab.com/libeigen/eigen/-/commit/86aee3d9c5b0ea73f7854901c1ce216135f1228b 
+#### if a new version is released this should be fixed to that version.
+WORKDIR ${EIGEN_DIR}
+RUN git clone https://gitlab.com/libeigen/eigen.git
+WORKDIR ${EIGEN_DIR}/build_dir
+RUN cmake ${EIGEN_DIR}/eigen
+RUN make install
 
 WORKDIR ${COLCON_WS_SRC}
 
