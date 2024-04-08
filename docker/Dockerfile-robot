@@ -3,30 +3,41 @@ FROM ros:${ROS_DISTRO}
 
 ENV COLCON_WS=/root/colcon_ws
 ENV COLCON_WS_SRC=/root/colcon_ws/src
+ENV EIGEN_DIR=/root/eigen
 ENV PYTHONWARNINGS="ignore:setup.py install is deprecated::setuptools.command.install"
 
 ENV DEBIAN_FRONTEND noninteractive
 
+### build eigen from source  ## worked with https://gitlab.com/libeigen/eigen/-/commit/86aee3d9c5b0ea73f7854901c1ce216135f1228b 
+#### if a new version is released this should be fixed to that version.
+WORKDIR ${EIGEN_DIR}
+RUN git clone https://gitlab.com/libeigen/eigen.git
+WORKDIR ${EIGEN_DIR}/build_dir
+RUN cmake ${EIGEN_DIR}/eigen
+RUN make install
+
+WORKDIR ${COLCON_WS_SRC}
+
 # ROS 2 basic navigation and driver
 RUN apt-get update -qq \
     && apt-get install -y \
-        git \
-        ros-${ROS_DISTRO}-xacro \
-        ros-${ROS_DISTRO}-ecl-build \
-        ros-${ROS_DISTRO}-kobuki-velocity-smoother \
-        ros-${ROS_DISTRO}-joint-state-publisher \
-        ros-${ROS_DISTRO}-rplidar-ros \
-        ros-${ROS_DISTRO}-realsense2-camera \
-        ros-${ROS_DISTRO}-nav2-amcl \
-        ros-${ROS_DISTRO}-nav2-dwb-controller \
-        python3-colcon-common-extensions \
+    git \
+    ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-ecl-build \
+    ros-${ROS_DISTRO}-kobuki-velocity-smoother \
+    ros-${ROS_DISTRO}-joint-state-publisher \
+    ros-${ROS_DISTRO}-rplidar-ros \
+    ros-${ROS_DISTRO}-realsense2-camera \
+    ros-${ROS_DISTRO}-nav2-amcl \
+    ros-${ROS_DISTRO}-nav2-dwb-controller \
+    python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
 
 # perception and vision
 RUN apt-get update -qq \
     && apt-get install -y \
-        ros-${ROS_DISTRO}-perception \
-        ros-${ROS_DISTRO}-vision-opencv \
+    ros-${ROS_DISTRO}-perception \
+    ros-${ROS_DISTRO}-vision-opencv \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${COLCON_WS}
@@ -58,3 +69,5 @@ COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation
 RUN cd ${COLCON_WS}\
     && . /opt/ros/${ROS_DISTRO}/setup.sh\
     && colcon build --packages-select ricbot_description ricbot_bringup
+
+CMD ["ros2", "launch", "ricbot_bringup", "ricbot_robot.launch.py"]

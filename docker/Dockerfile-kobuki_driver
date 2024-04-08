@@ -1,0 +1,44 @@
+ARG ROS_DISTRO
+FROM ros:${ROS_DISTRO}
+
+ENV COLCON_WS=/root/colcon_ws
+ENV COLCON_WS_SRC=/root/colcon_ws/src
+ENV EIGEN_DIR=/root/eigen
+ENV PYTHONWARNINGS="ignore:setup.py install is deprecated::setuptools.command.install"
+
+ENV DEBIAN_FRONTEND noninteractive
+
+### build eigen from source  ## worked with https://gitlab.com/libeigen/eigen/-/commit/86aee3d9c5b0ea73f7854901c1ce216135f1228b 
+#### if a new version is released this should be fixed to that version.
+WORKDIR ${EIGEN_DIR}
+RUN git clone https://gitlab.com/libeigen/eigen.git
+WORKDIR ${EIGEN_DIR}/build_dir
+RUN cmake ${EIGEN_DIR}/eigen
+RUN make install
+
+
+
+RUN apt update \ 
+    && apt install ros-${ROS_DISTRO}-kobuki-ros-interfaces ros-${ROS_DISTRO}-kobuki-velocity-smoother -y
+
+WORKDIR ${COLCON_WS_SRC}
+RUN git clone https://github.com/kobuki-base/kobuki_core.git\
+    && git clone https://github.com/kobuki-base/kobuki_ros.git\
+    && git clone https://github.com/kobuki-base/cmd_vel_mux.git\
+    && git clone https://github.com/stonier/ecl_core.git\
+    && git clone https://github.com/stonier/ecl_lite.git
+
+# could also be installed via apt-get install ros-${ROS_DISTRO}-sophus and changing the files in the PR
+RUN git clone https://github.com/clalancette/sophus.git -b clalancette/fix-compiler-error
+
+WORKDIR ${COLCON_WS}
+RUN apt update 
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh\
+    && rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} -y 
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh\
+    && colcon build --symlink-install --executor sequential
+
+COPY ./docker/entrypoint_kobuki_driver.bash /ros_entrypoint.bash
+RUN chmod +x /ros_entrypoint.bash
+ENTRYPOINT ["/ros_entrypoint.bash"]
+CMD [ "ros2",  "launch", "kobuki_node",  "kobuki_node-launch.py" ]
