@@ -69,3 +69,5 @@ COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation
 RUN cd ${COLCON_WS}\
     && . /opt/ros/${ROS_DISTRO}/setup.sh\
     && colcon build --packages-select ricbot_description ricbot_bringup
+
+CMD ["ros2", "launch", "ricbot_bringup", "ricbot_robot.launch.py"]
