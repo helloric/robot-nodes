@@ -13,22 +13,35 @@ You need to be logged into the DFKI Distribution (Registry). *Normally this need
 
 
 ## Ricbot Image
-This Image contains the kobuki driver, the robot description, navigation including a map and drivers for camera and laser sensor.
-The ricbot image is named `d-reg.hb.dfki.de/helloric/ricbot:humble_arm64`. 
-**TODO: how to start**
-To build the image you have 2 options:
-1. build on the PI
+The ricbot image is already build at `d-reg.hb.dfki.de/helloric/ricbot:humble_arm64`. If you just want to start it take a look at "how to start".
 
+This Image contains the kobuki driver, the robot description, navigation including a map and drivers for camera and laser sensor.
+
+To build the image you have 3 options:
+1. build on the Pi with docker compose
     - 1.1. ssh in the robot `ssh ricbot@<robot ip>` 
     - 1.2. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
-    - 1.3. build the image with `docker build -t d-reg.hb.dfki.de/helloric/ricbot:humble_arm64 -f docker/Dockerfile-robot --build-arg="ROS_DISTRO=humble" .` *(This might take a while or the pi crashes - never tried to build on the PI)*
-2. build on a PC (preferably with a lot of CPU cores and RAM)
-    - 2.1. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
-    - 2.2. Create dockerx multiplatform `docker buildx create --name multiplatform --driver=docker-container`
-    - 2.3. build the image with `docker buildx build -t d-reg.hb.dfki.de/helloric/ricbot:humble_arm64 --load --builder=multiplatform --platform=linux/arm64 -f docker/Dockerfile-robot --build-arg="ROS_DISTRO=humble" .`
+    - 1.3. cd into this repo `cd docker-env-robot`
+    - 1.4. build the image with `docker compose build`
+2. build on the PI with docker
+    - 2.1. ssh in the robot `ssh ricbot@<robot ip>` 
+    - 2.2. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
+    - 2.3. cd into this repo `cd docker-env-robot`
+    - 2.4. build the image with `docker build -t d-reg.hb.dfki.de/helloric/ricbot:humble_arm64 -f docker/Dockerfile-robot --build-arg="ROS_DISTRO=humble" .` *(This might take a while or the pi crashes - never tried to build on the PI)*
+3. build on a PC (preferably with a lot of CPU cores and RAM)
+    - 3.1. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
+    - 3.2. cd into this repo `cd docker-env-robot`
+    - 3.3. Create dockerx multiplatform `docker buildx create --name multiplatform --driver=docker-container`
+    - 3.4. build the image with `docker buildx build -t d-reg.hb.dfki.de/helloric/ricbot:humble_arm64 --load --builder=multiplatform --platform=linux/arm64 -f docker/Dockerfile-robot --build-arg="ROS_DISTRO=humble" .`
 
 You should then push the image to the registry with `docker push d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64`. *(You need to be logged in to the Registry for that + The Registry is only reachable from within the DFKI Network or using the VPN)*
 
+### Run the image
+You can just run the image:
+1. cd into `cd docker-env-robot`
+1. run `docker compose up` that will start all services required in the `docker-compose.yml` file. This is only the "ricbot"-service (for now).
+
+Note that the `up` and `run` commands on docker-compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
 
 ## Kobuki Base Driver
 This Image only holds the driver for the kobuki base and is a stripped down version of the Ricbot image
