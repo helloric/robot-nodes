@@ -9,7 +9,7 @@ services:
         - "linux/arm64"
       args:
         ROS_DISTRO: humble
-    image: ricbot:humble
+    image: d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64
     environment:
       - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
     command: [ros2, launch, ricbot_bringup, ricbot_robot.launch.py]
