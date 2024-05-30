@@ -29,3 +29,4 @@ services:
       args:
         ROS_DISTRO: humble
     image: d-reg.hb.dfki.de/helloric/teleop
+    network_mode: host
