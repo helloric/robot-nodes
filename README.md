@@ -1,115 +1,78 @@
 # Docker Environment for the Robots
 This Repo holds the code to the docker images that should run on the Raspberry PI.
-These Images need to build for the ARM64 platform.
+These Images need to build for the ARM64 platform, we cross compile them here.
 Additionally the code for teleop images is here for debugging but could possibly be moved to its own repo in the future.
 
 **Communication between Nodes does not work if you are using the VPN.**
 *Containers where tested on Linux only*
 
 ## Prerequisites
-Docker needs to be installed.
+
+1. Install Docker on the robot
+1. Install Docker locally on your PC
+1. (optional) connect to the DFKI network.
+
 If you want to use / push images from / to the DFKI Distribution (Registry) you need to be in the DFKI network or connected to the DFKI VPN.
-You need to be logged into the DFKI Distribution (Registry). *Normally this needs to be done only once*
+You need to be logged into the DFKI Distribution (Registry) with the command `docker login d-reg.hb.dfki.de`. *Normally this needs to be done only once*.
 
 
-## Ricbot Image
-The ricbot image is already build at `d-reg.hb.dfki.de/helloric/ricbot:humble_arm64`. If you just want to start it take a look at "how to start".
+## Image overview
+All images are already build at `d-reg.hb.dfki.de/helloric/NAME:humble_arm64_XXX`. Where NAME is the name of the image and XXX the version number. If you just want to start it take a look at "how to start".
 
-This Image contains the kobuki driver, the robot description, navigation including a map and drivers for camera and laser sensor.
 
-To build the image you have 3 options:
-1. build on the Pi with docker compose
-    - 1.1. ssh in the robot `ssh ricbot@<robot ip>` 
-    - 1.2. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
-    - 1.3. cd into this repo `cd docker-env-robot`
-    - 1.4. build the image with `docker compose build`
-2. build **on the Raspberry PI** with docker
-    - 2.1. ssh in the robot `ssh ricbot@<robot ip>` 
-    - 2.2. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
-    - 2.3. cd into this repo `cd docker-env-robot`
-    - 2.4. build the image with `docker build -t d-reg.hb.dfki.de/helloric/ricbot:humble_arm64_001 -f docker/Dockerfile-robot --build-arg="ROS_DISTRO=humble" .` *(This might take a while or the pi crashes - never tried to build on the PI)*
-3. build on a PC (preferably with a lot of CPU cores and RAM)
-    - 3.1. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
-    - 3.2. cd into this repo `cd docker-env-robot`
-    - 3.3. Create dockerx multiplatform `docker buildx create --name multiplatform --driver=docker-container`
-    - 3.4. **BEFORE calling the next command make sure to update the version number "XXX" to your version!**
-    - 3.4. build the image with `docker buildx build -t d-reg.hb.dfki.de/helloric/ricbot:humble_arm64_XXX --load --builder=multiplatform --platform=linux/arm64 -f docker/Dockerfile-robot --build-arg="ROS_DISTRO=humble" .`
+### ricbot
+This image contains the kobuki driver, the robot description, navigation including a map and drivers for camera and laser sensor.
 
-You should then push the image to the registry with `docker push d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64_XXX`. *(You need to be logged in to the Registry for that + The Registry is only reachable from within the DFKI Network or using the VPN)*
-Make sure you don't overwrite an existing image!
+### ui
+The UI image provides the Svelte-UI for the robot. Note that the UI can not directly talk to ROS, it depends on the ui_com service.
+
+### ui_com
+The ui-com image provides the backend via WebSocket for the UI and allows communication between the UI and the rest of the robot.
+
+### teleop
+The teleop image can be used for debugging to move the robot around using the keyboard.
+
+### ds4
+**⚠ Using the Gamepad will tip the robot over! ⚠**
+
+**It can only be used with extreme caution!**
+
+The ds4 Image can be used moving the robot around using a PlayStation DualShock 4 controller.
+
+
+## Building Images
+
+You do not need to build the image manually however if you want to build it:
+1. Checkout and update this repo including all submodules: `git submodule update --init --recursive`
+1. Call the `build.bash`-script.
+
+It will cross-build all required docker images from the code in the submodule-folders as the specified version.
+
+You should then push the image to the registry with `docker compose push`. *(You need to be logged in to the Registry for that + The Registry is only reachable from within the DFKI Network or using the VPN)*
+
+Make sure you don't overwrite an existing image while publishing!
+
+## Deploying on the robot
+Copy the "compose.yml" file from this 
+
+Alternatively you can also just save the images you have build and use ssh to copy them to the robot. For the ricbot-image you can do something like this:
+```bash
+# on your PC
+docker save -o ricbot.tar d-reg.hb.dfki.de/helloric/ricbot:humble_arm64_001
+# copy this to the robot, change X.X to the actual IP of the robot, do NOT remove the colon (:) at the end
+scp ricbot.tar robot@10.250.X.X:
+
+# now SSH  on the robot and load the image like this:
+docker load -i ricbot.tar
+```
+
+Because the image can be a few GB big its recommended to connect PC and robot via cable.
 
 ### Run the image
 You can just run the image:
 1. cd into `cd docker-env-robot`
 1. run `docker compose up` that will start all services required in the `docker-compose.yml` file. This is only the "ricbot"-service (for now).
 
-Note that the `up` and `run` commands on docker-compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
+Note that the `up` and `run` commands on docker-compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
 
-## Kobuki Base Driver
-This Image only holds the driver for the kobuki base and is a stripped down version of the Ricbot image
-The Image for the kobuki base driver node is named `d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64_XXX`. If you want to start the Container you need to
-1. ssh in the robot `ssh ricbot@<robot ip>` 
-2. start the container with `docker run -it -d --network host --device=/dev/ttyUSB0 d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64_XXX` 
-If you want to see the output of the node omit the `-d` option.
-
-A start up sound should be played and you should be able to see the following topics with `ros2 topic list`:
-```
-/commands/controller_info
-/commands/digital_output
-/commands/external_power
-/commands/led1
-/commands/led2
-/commands/motor_power
-/commands/reset_odometry
-/commands/sound
-/commands/velocity
-/controller_info
-/debug/raw_control_command
-/debug/raw_data_command
-/debug/raw_data_stream
-/diagnostics
-/events/bumper
-/events/button
-/events/cliff
-/events/digital_input
-/events/power_system
-/events/robot_state
-/events/wheel_drop
-/joint_states
-/odom
-/parameter_events
-/rosout
-/sensors/battery_state
-/sensors/core
-/sensors/dock_ir
-/sensors/imu_data
-/sensors/imu_data_raw
-/tf
-/version_info
-```
-
-To build the image you have 2 options:
-1. build on the PI
-
-    - 1.1. ssh in the robot `ssh ricbot@<robot ip>` 
-    - 1.2. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
-    - 1.3. build the image with `docker build -t d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64 -f docker/Dockerfile-kobuki_driver --build-arg="ROS_DISTRO=humble" .` *(This might take a while or the pi crashes - never tried to build on the PI)*
-2. build on a PC (preferably with a lot of CPU cores and RAM)
-    - 2.1. clone this repo `git clone https://git.hb.dfki.de/helloric/docker-env-robot.git`
-    - 2.2. Create dockerx multiplatform `docker buildx create --name multiplatform --driver=docker-container`
-    - 2.3. build the image with `docker buildx build -t d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64 --load --builder=multiplatform --platform=linux/arm64 -f docker/Dockerfile-kobuki_driver --build-arg="ROS_DISTRO=humble" .`
-
-You should then push the image to the registry with `docker push d-reg.hb.dfki.de/helloric/kobuki_driver:humble_arm64`. *(You need to be logged in to the Registry for that + The Registry is only reachable from within the DFKI Network or using the VPN)*
-
-
-## Teleop Image
-The Teleop Image can be used for debugging to move the robot around using the keyboard.
-The image is named `d-reg.hb.dfki.de/helloric/kobuki_teleop:humble` and can be started on you local machine (in the same network as the robot) with `docker run -it --network host d-reg.hb.dfki.de/helloric/kobuki_teleop:humble`.
-To build the image run `docker build -t d-reg.hb.dfki.de/helloric/kobuki_teleop:humble -f docker/Dockerfile-teleop --build-arg="ROS_DISTRO=humble" .`
-
-## DS4 Image
-**!!!Using the Gamepad will tip the robot over!!!**
-**It can only be used with extreme caution!**
-The DS4 Image can be used for debugging to move the robot around using a dualshock 4 controller.
-The image is named `d-reg.hb.dfki.de/helloric/kobuki_teleop_ds4:humble` and can be started on you local machine (in the same network as the robot) with `docker run -it --network host d-reg.hb.dfki.de/helloric/kobuki_teleop_ds4:humble`.
-To build the image run `docker build -t d-reg.hb.dfki.de/helloric/kobuki_teleop_ds4:humble -f docker/Dockerfile-ds4 --build-arg="ROS_DISTRO=humble" .`
+After building you should push the image to the registry with `docker compose push`. *(You need to be logged in to the Registry for that, the Registry is only reachable from within the DFKI Network or using the VPN)*
