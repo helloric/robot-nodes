@@ -1,0 +1,62 @@
+services:
+  ricbot:
+    platform: "linux/arm64"
+    # just the basic robot (headless, installs drivers, publishes description)
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile-robot
+      platforms:
+        - "linux/arm64"
+      args:
+        ROS_DISTRO: humble
+    image: d-reg.hb.dfki.de/helloric/ricbot:humble_arm64_001
+    environment:
+      - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
+    command: [ros2, launch, ricbot_bringup, ricbot_robot.launch.py]
+    privileged: True
+    volumes:
+      - ./roslog:/root/.ros/
+      - /dev:/dev
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    devices:
+      - /dev/bus/usb/
+
+  ui:
+    platform: "linux/arm64"
+    depends_on:
+      - ui_com
+    image: d-reg.hb.dfki.de/helloric/ui:arm64_001
+    build:
+      context: ./svelte-ui/
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - 5173:5173
+  
+  ui_com:
+    platform: "linux/arm64"
+    image: d-reg.hb.dfki.de/helloric/ui_com:humble_arm64_001
+    build:
+      context: ./helloric_ui_com/
+      dockerfile: ./Dockerfile
+      args:
+        ROS_DISTRO: humble
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  teleop:
+    platform: "linux/arm64"
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile-teleop
+      args:
+        ROS_DISTRO: humble
+    image: d-reg.hb.dfki.de/helloric/teleop:humble_arm64_001
+
+  ds4:
+    platform: "linux/arm64"
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile-ds4
+      args:
+        ROS_DISTRO: humble
+    image: d-reg.hb.dfki.de/helloric/ds4:humble_arm64_001

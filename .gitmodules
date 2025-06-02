@@ -7,3 +7,9 @@
 [submodule "ricbot_bringup"]
 	path = ricbot_bringup
 	url = ../ricbot_bringup
+[submodule "svelte-ui"]
+	path = svelte-ui
+	url = ../svelte-ui
+[submodule "helloric_ui_com"]
+	path = helloric_ui_com
+	url = ../helloric_ui_com
