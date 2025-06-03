@@ -1,7 +1,8 @@
 services:
   ricbot:
+    restart: always
     platform: "linux/arm64"
-    # just the basic robot (headless, installs drivers, publishes description)
+    # just the basic robot (headless, runs drivers, publishes description)
     build:
       context: ./
       dockerfile: ./docker/Dockerfile-robot
@@ -12,16 +13,17 @@ services:
     image: d-reg.hb.dfki.de/helloric/ricbot:humble_arm64_001
     environment:
       - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
-    command: [ros2, launch, ricbot_bringup, ricbot_robot.launch.py]
-    privileged: True
     volumes:
+      # logs for debugging
       - ./roslog:/root/.ros/
-      - /dev:/dev
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     devices:
-      - /dev/bus/usb/
+      # USB devices to connect to kobuki and Lidar
+      - /dev/bus/usb/:/dev/bus/usb/
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyUSB1:/dev/ttyUSB1
 
   ui:
+    restart: always
     platform: "linux/arm64"
     depends_on:
       - ui_com
@@ -30,9 +32,10 @@ services:
       context: ./svelte-ui/
       dockerfile: ./docker/Dockerfile
     ports:
-      - 5173:5173
+      - 80:5173
   
   ui_com:
+    restart: always
     platform: "linux/arm64"
     image: d-reg.hb.dfki.de/helloric/ui_com:humble_arm64_001
     build:
@@ -42,6 +45,8 @@ services:
         ROS_DISTRO: humble
     environment:
       - PYTHONUNBUFFERED=1
+    ports:
+      - 7000:7000
 
   teleop:
     platform: "linux/arm64"
@@ -50,6 +55,8 @@ services:
       dockerfile: ./docker/Dockerfile-teleop
       args:
         ROS_DISTRO: humble
+    stdin_open: true
+    tty: true
     image: d-reg.hb.dfki.de/helloric/teleop:humble_arm64_001
 
   ds4:
@@ -59,4 +66,7 @@ services:
       dockerfile: ./docker/Dockerfile-ds4
       args:
         ROS_DISTRO: humble
+    devices:
+      - /dev:/dev
+    privileged: true
     image: d-reg.hb.dfki.de/helloric/ds4:humble_arm64_001

@@ -6,6 +6,10 @@ FROM brean/kobuki-base:${ROS_DISTRO}_arm64_001
 ENV COLCON_WS=/root/colcon_ws
 ENV COLCON_WS_SRC=/root/colcon_ws/src
 
+COPY ./docker/entrypoint.bash /entrypoint.bash
+RUN chmod +x /entrypoint.bash
+ENTRYPOINT ["/entrypoint.bash"]
+
 COPY ./ricbot_description ${COLCON_WS_SRC}/ricbot_description
 COPY ./ricbot_bringup ${COLCON_WS_SRC}/ricbot_bringup
 COPY ./ricbot_navigation ${COLCON_WS_SRC}/ricbot_navigation

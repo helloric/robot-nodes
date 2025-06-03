@@ -65,6 +65,7 @@ scp ricbot.tar robot@10.250.X.X:
 # now SSH  on the robot and load the image like this:
 docker load -i ricbot.tar
 ```
+See [docker documentation](https://docs.docker.com/reference/cli/docker/image/load/) for details
 
 Because the image can be a few GB big its recommended to connect PC and robot via cable.
 
