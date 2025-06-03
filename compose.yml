@@ -14,10 +14,13 @@ services:
     environment:
       - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
     volumes:
+      # logs for debugging
       - ./roslog:/root/.ros/
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     devices:
+      # USB devices to connect to kobuki and Lidar
       - /dev/bus/usb/:/dev/bus/usb/
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyUSB1:/dev/ttyUSB1
 
   ui:
     restart: always
