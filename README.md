@@ -71,9 +71,10 @@ Because the image can be a few GB big its recommended to connect PC and robot vi
 
 ### Run the image
 You can just run the image:
-1. cd into `cd docker-env-robot`
-1. run `docker compose up` that will start all services required in the `compose.yml` file. This is only the "ricbot"-service (for now).
+1. copy the `compose.yml` to the robot, for example using scp would look like this:  `scp compose.yml robot@10.250.X.X:`
+1. run `docker compose up ricbot ui ds4 -d` that will start the basic ricbot, ui (with ui-com as it depends on it) and ds4 as defined in the `compose.yml` file in the background
+1. if you want to get the log output you can run `docker compose logs -f`. Press <kbd>Ctrl</kbd>+<kbd>c</kbd> to quit logging.
+1. to stop the docker container run `docker compose down`.
 
-Note that the `up` and `run` commands on docker-compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
+Note that the `up` and `run` commands on docker compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
 
-After building you should push the image to the registry with `docker compose push`. *(You need to be logged in to the Registry for that, the Registry is only reachable from within the DFKI Network or using the VPN)*
