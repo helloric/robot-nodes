@@ -65,13 +65,14 @@ scp ricbot.tar robot@10.250.X.X:
 # now SSH  on the robot and load the image like this:
 docker load -i ricbot.tar
 ```
+See [docker documentation](https://docs.docker.com/reference/cli/docker/image/load/) for details
 
 Because the image can be a few GB big its recommended to connect PC and robot via cable.
 
 ### Run the image
 You can just run the image:
 1. cd into `cd docker-env-robot`
-1. run `docker compose up` that will start all services required in the `docker-compose.yml` file. This is only the "ricbot"-service (for now).
+1. run `docker compose up` that will start all services required in the `compose.yml` file. This is only the "ricbot"-service (for now).
 
 Note that the `up` and `run` commands on docker-compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
 
