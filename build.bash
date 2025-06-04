@@ -17,4 +17,3 @@ else
     echo "Builder '$BUILDER_NAME' created and set as the active builder."
 fi
 docker compose build ricbot teleop ds4 ui ui_com
-docker compose down
