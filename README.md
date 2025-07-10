@@ -53,12 +53,27 @@ You should then push the image to the registry with `docker compose push`. *(You
 Make sure you don't overwrite an existing image while publishing!
 
 ## Deploying on the robot
-Copy the "compose.yml" file from this 
+Copy the "compose.yml" file from this repository to the robot, if it already exists you probably want to overwrite it. However backup the compose.yml-file before, like this:
+```bash
+# connect to the robot and move the compose file
+ssh robot@10.250.X.X:
+# make sure the compose file exists
+ls
+# rename the file
+mv compose.yml compose_backup.yml
+```
+
+Now copy the new compose file to the robot:
+```bash
+# on your machine, change the path of the compose.yml and 
+scp compose.yml robot@10.250.X.X:
+```
 
 Alternatively you can also just save the images you have build and use ssh to copy them to the robot. For the ricbot-image you can do something like this:
+
 ```bash
 # on your PC
-docker save -o ricbot.tar d-reg.hb.dfki.de/helloric/ricbot:humble_arm64_001
+docker save -o ricbot.tar d-reg.hb.dfki.de/helloric/ricbot:jazzy_arm64_001
 # copy this to the robot, change X.X to the actual IP of the robot, do NOT remove the colon (:) at the end
 scp ricbot.tar robot@10.250.X.X:
 
