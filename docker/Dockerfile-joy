@@ -2,6 +2,6 @@ ARG ROS_DISTRO
 FROM ros:${ROS_DISTRO}
 
 RUN apt update 
-RUN apt install ros-jazzy-joy-teleop ros-jazzy-teleop-twist-joy -y
+RUN apt install ros-${ROS_DISTRO}-joy-teleop ros-${ROS_DISTRO}-teleop-twist-joy -y
 
 CMD [ "ros2", "launch", "teleop_twist_joy", "teleop-launch.py", "joy_vel:='commands/velocity'" ]
