@@ -25,7 +25,7 @@ WORKDIR /opt/underlay_ws
 RUN mkdir src \
     && cd src \
     && git clone https://github.com/naoki-mizuno/ds4_driver \
-        --branch ${ROS_DISTRO}-devel
+        --branch humble-devel
 RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build"
 
 COPY ./docker/entrypoint-ds4.bash /entrypoint.bash
