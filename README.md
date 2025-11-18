@@ -17,7 +17,7 @@ You need to be logged into the DFKI Distribution (Registry) with the command `do
 
 
 ## Image overview
-All images are already build at `d-reg.hb.dfki.de/helloric/NAME:humble_arm64_XXX`. Where NAME is the name of the image and XXX the version number. If you just want to start it take a look at "how to start".
+All images are already build at `d-reg.hb.dfki.de/helloric/NAME:jazzy_arm64_XXX`. Where NAME is the name of the image and XXX the version number. If you just want to start it take a look at "how to start".
 
 
 ### ricbot

@@ -1,4 +1,4 @@
-ARG ROS_DISTRO=humble
+ARG ROS_DISTRO=jazzy
 FROM brean/kobuki-base:${ROS_DISTRO}_arm64_001
 
 # see https://github.com/helloric/docker-env-kobuki/blob/main/Dockerfile
