@@ -18,7 +18,10 @@ echo "Current Docker builder is: '$CURRENT_BUILDER'"
 echo "Switching to builder: '$BUILDER_NAME'"
 docker buildx use "$BUILDER_NAME"
 echo "Successfully switched to builder: '$BUILDER_NAME', building now:"
-docker compose build ricbot teleop ds4 ui ui_com
+
+# --- the actual build command ---
+docker compose build ricbot teleop ui ui_com ds4
+# --- ---
 
 echo "Switching back to the previous builder: '$CURRENT_BUILDER'"
 docker buildx use "$CURRENT_BUILDER"
