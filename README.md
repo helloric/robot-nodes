@@ -60,9 +60,10 @@ scp compose.yml robot@10.250.X.X:
 
 Alternatively you can also just save the images you have build and use ssh to copy them to the robot. For the ricbot-image you can do something like this:
 
+
 ```bash
 # on your PC
-docker save -o ricbot.tar d-reg.hb.dfki.de/helloric/ricbot:jazzy_arm64_001
+docker save -o ricbot.tar harbor.hb.dfki.de/helloric/ricbot:jazzy_arm64_001
 # copy this to the robot, change X.X to the actual IP of the robot, do NOT remove the colon (:) at the end
 scp ricbot.tar robot@10.250.X.X:
 
@@ -80,5 +81,18 @@ You can just run the image:
 1. if you want to get the log output you can run `docker compose logs -f`. Press <kbd>Ctrl</kbd>+<kbd>c</kbd> to quit logging.
 1. to stop the docker container run `docker compose down`.
 
-Note that the `up` and `run` commands on docker compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
+Note that the `up` and `run` commands on docker compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "run", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to access a terminal with the same configuration as the robot if you like to test something locally.
+
+## Contributing
+
+Please use the [issue tracker](https://github.com/helloric/robot-nodes/issues) to submit bug reports and feature requests. Please use Pull Requests as described [here](/CONTRIBUTING.md) to add/adapt functionality. 
+
+## License
+
+This docker environment setup is distributed under the [3-clause BSD license](https://opensource.org/licenses/BSD-3-Clause).
+
+## Maintainer / Authors / Contributers
+
+- Andreas Bresser, andreas.bresser@dfki.de
+- Adrian Auer, adrian.auer@dfki.de
 
