@@ -7,32 +7,25 @@ Additionally the code for teleop images is here for debugging but could possibly
 *Containers where tested on Linux only*
 
 ## Prerequisites
-
-1. Install Docker on the robot
-1. Install Docker locally on your PC
-1. (optional) connect to the DFKI network.
-
-If you want to use / push images from / to the DFKI Distribution (Registry) you need to be in the DFKI network or connected to the DFKI VPN.
-You need to be logged into the DFKI Distribution (Registry) with the command `docker login d-reg.hb.dfki.de`. *Normally this needs to be done only once*.
-
+Docker needs to be installed on the robot, only tested with docker-ce.
+If you want to build images locally you need Docker installed on your local system as well. (Ideally, this is not necessary)
 
 ## Image overview
-All images are already build at `d-reg.hb.dfki.de/helloric/NAME:jazzy_arm64_XXX`. Where NAME is the name of the image and XXX the version number. If you just want to start it take a look at "how to start".
-
+All images are already built in our [Harbor](https://harbor.hb.dfki.de/harbor/projects/10/repositories) 
 
 ### ricbot
-This image contains the kobuki driver, the robot description, navigation including a map and drivers for camera and laser sensor.
+This image contains the [kobuki driver](https://github.com/helloric/docker-env-kobuki), the [robot description](https://github.com/helloric/ricbot_description), [navigation](https://github.com/helloric/ricbot_navigation) including a map and drivers for camera and laser sensor.
 
-### ui
+### [ui](https://github.com/helloric/svelte-ui)
 The UI image provides the Svelte-UI for the robot. Note that the UI can not directly talk to ROS, it depends on the ui_com service.
 
-### ui_com
+### [ui_com](https://github.com/helloric/helloric_ui_com)
 The ui-com image provides the backend via WebSocket for the UI and allows communication between the UI and the rest of the robot.
 
-### teleop
+### [teleop](https://index.ros.org/r/teleop_twist_keyboard/#jazzy)
 The teleop image can be used for debugging to move the robot around using the keyboard.
 
-### ds4
+### [ds4](https://github.com/naoki-mizuno/ds4_driver)
 **⚠ Using the Gamepad will tip the robot over! ⚠**
 
 **It can only be used with extreme caution!**
@@ -47,10 +40,6 @@ You do not need to build the image manually however if you want to build it:
 1. Call the `build.bash`-script.
 
 It will cross-build all required docker images from the code in the submodule-folders as the specified version.
-
-You should then push the image to the registry with `docker compose push`. *(You need to be logged in to the Registry for that + The Registry is only reachable from within the DFKI Network or using the VPN)*
-
-Make sure you don't overwrite an existing image while publishing!
 
 ## Deploying on the robot
 Copy the "compose.yml" file from this repository to the robot, if it already exists you probably want to overwrite it. However backup the compose.yml-file before, like this:
@@ -71,9 +60,10 @@ scp compose.yml robot@10.250.X.X:
 
 Alternatively you can also just save the images you have build and use ssh to copy them to the robot. For the ricbot-image you can do something like this:
 
+
 ```bash
 # on your PC
-docker save -o ricbot.tar d-reg.hb.dfki.de/helloric/ricbot:jazzy_arm64_001
+docker save -o ricbot.tar harbor.hb.dfki.de/helloric/ricbot:jazzy_arm64_001
 # copy this to the robot, change X.X to the actual IP of the robot, do NOT remove the colon (:) at the end
 scp ricbot.tar robot@10.250.X.X:
 
@@ -91,5 +81,18 @@ You can just run the image:
 1. if you want to get the log output you can run `docker compose logs -f`. Press <kbd>Ctrl</kbd>+<kbd>c</kbd> to quit logging.
 1. to stop the docker container run `docker compose down`.
 
-Note that the `up` and `run` commands on docker compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "up", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to become a terminal with the same configuration as the robot if you like to test something locally.
+Note that the `up` and `run` commands on docker compose are different. `up` also activates the port forwarding, the run-command only starts a new instance without exposing ports to outside. You can not connect to your robot if you start a docker container with "run", so you always want to use `docker compose up` to start but `docker compose run ricbot bash` can be helpful to access a terminal with the same configuration as the robot if you like to test something locally.
+
+## Contributing
+
+Please use the [issue tracker](https://github.com/helloric/robot-nodes/issues) to submit bug reports and feature requests. Please use Pull Requests as described [here](/CONTRIBUTING.md) to add/adapt functionality. 
+
+## License
+
+This docker environment setup is distributed under the [3-clause BSD license](https://opensource.org/licenses/BSD-3-Clause).
+
+## Maintainer / Authors / Contributers
+
+- Andreas Bresser, andreas.bresser@dfki.de
+- Adrian Auer, adrian.auer@dfki.de
 

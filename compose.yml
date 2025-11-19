@@ -10,7 +10,7 @@ services:
         - "linux/arm64"
       args:
         ROS_DISTRO: jazzy
-    image: d-reg.hb.dfki.de/helloric/ricbot:jazzy_arm64_001
+    image: harbor.hb.dfki.de/helloric/ricbot:jazzy_arm64_001
     environment:
       - PYTHONUNBUFFERED=1 # important to show error messages if a ros service crashes!
     volumes:
@@ -27,7 +27,7 @@ services:
     platform: "linux/arm64"
     depends_on:
       - ui_com
-    image: d-reg.hb.dfki.de/helloric/ui:arm64_001
+    image: harbor.hb.dfki.de/helloric/ui:arm64_001
     build:
       context: ./svelte-ui/
       dockerfile: ./docker/Dockerfile
@@ -37,7 +37,7 @@ services:
   ui_com:
     restart: always
     platform: "linux/arm64"
-    image: d-reg.hb.dfki.de/helloric/ui_com:jazzy_arm64_001
+    image: harbor.hb.dfki.de/helloric/ui_com:jazzy_arm64_001
     build:
       context: ./helloric_ui_com/
       dockerfile: ./Dockerfile
@@ -57,7 +57,7 @@ services:
         ROS_DISTRO: jazzy
     stdin_open: true
     tty: true
-    image: d-reg.hb.dfki.de/helloric/teleop:jazzy_arm64_001
+    image: harbor.hb.dfki.de/helloric/teleop:jazzy_arm64_001
 
   ds4:
     platform: "linux/arm64"
@@ -69,4 +69,4 @@ services:
     devices:
       - /dev:/dev
     privileged: true
-    image: d-reg.hb.dfki.de/helloric/ds4:jazzy_arm64_001
+    image: harbor.hb.dfki.de/helloric/ds4:jazzy_arm64_001
