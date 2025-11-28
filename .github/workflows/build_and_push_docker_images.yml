@@ -43,6 +43,7 @@ jobs:
           images: ${{ env.REGISTRY }}/helloric/teleop
           tags: |
             type=raw,value=${{ github.sha }}
+            type=raw,value=latest
           labels: |
             labels: |
                 org.opencontainers.image.title=HelloRic Teleop
@@ -81,7 +82,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v3
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ${{ env.REGISTRY }}/helloric/teleop
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
       
