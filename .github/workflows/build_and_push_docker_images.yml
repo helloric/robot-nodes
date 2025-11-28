@@ -36,11 +36,11 @@ jobs:
           - name: ui
             platforms: linux/arm64
             context: ./svelte-ui/
-            file: ./docker/Dockerfile
+            file: ./svelte-ui/docker/Dockerfile
           - name: ui_com
             platforms: linux/arm64
             context: ./helloric_ui_com/
-            file: ./Dockerfile
+            file: ./helloric_ui_com/Dockerfile
           - name: ds4
             platforms: linux/arm64
             context: .
