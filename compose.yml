@@ -27,7 +27,7 @@ services:
     platform: "linux/arm64"
     depends_on:
       - ui_com
-    image: ghcr.io/helloric/helloric/svelte-ui:latest
+    image: ghcr.io/helloric/svelte-ui:latest
     build:
       context: ./svelte-ui/
       dockerfile: ./docker/Dockerfile
@@ -37,7 +37,7 @@ services:
   ui_com:
     restart: always
     platform: "linux/arm64"
-    image: ghcr.io/helloric/helloric/helloric_ui_com:latest
+    image: ghcr.io/helloric/helloric_ui_com:latest
     build:
       context: ./helloric_ui_com/
       dockerfile: ./Dockerfile
