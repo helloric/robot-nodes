@@ -1,6 +1,7 @@
 services:
   ricbot:
     restart: always
+    network_mode: host
     platform: "linux/arm64"
     # just the basic robot (headless, runs drivers, publishes description)
     build:
@@ -19,8 +20,8 @@ services:
     devices:
       # USB devices to connect to kobuki and Lidar
       - /dev/bus/usb/:/dev/bus/usb/
-      - /dev/ttyUSB0:/dev/ttyUSB0
-      - /dev/ttyUSB1:/dev/ttyUSB1
+      - /dev/kobuki:/dev/kobuki
+      - /dev/lidar:/dev/lidar
 
   ui:
     restart: always
@@ -36,6 +37,7 @@ services:
   
   ui_com:
     restart: always
+    network_mode: host
     platform: "linux/arm64"
     image: ghcr.io/helloric/helloric_ui_com:latest
     build:
@@ -49,6 +51,7 @@ services:
       - 7000:7000
 
   teleop:
+    network_mode: host
     platform: "linux/arm64"
     build:
       context: ./
@@ -60,6 +63,7 @@ services:
     image: ghcr.io/helloric/teleop:latest
 
   ds4:
+    network_mode: host
     platform: "linux/arm64"
     build:
       context: ./
