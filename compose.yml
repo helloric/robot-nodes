@@ -19,8 +19,8 @@ services:
     devices:
       # USB devices to connect to kobuki and Lidar
       - /dev/bus/usb/:/dev/bus/usb/
-      - /dev/ttyUSB0:/dev/ttyUSB0
-      - /dev/ttyUSB1:/dev/ttyUSB1
+      - /dev/kobuki:/dev/kobuki
+      - /dev/lidar:/dev/lidar
 
   ui:
     restart: always
